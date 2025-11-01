@@ -1,14 +1,24 @@
 import { computed } from "vue";
 import useStore from "../store";
+import { 
+  detectEnvironment, 
+  generateNormalizedCSS, 
+  generateNormalizedJS, 
+  validateConsistency,
+  optimizeForEnvironment 
+} from "../utils/environmentSync";
 
 export const useTranspiler = () => {
   const { businesses, displayOptions, layoutSettings, agencySettings } = useStore();
+  
+  // Detect current environment for consistent rendering
+  const environment = detectEnvironment();
 
   // SVG Icons
   const icons = {
-    business: `<svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/></svg>`,
+    business: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/></svg>`,
     starFilled: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M394 480a16 16 0 0 1-9.39-3L256 383.76L127.39 477a16 16 0 0 1-24.55-18.08L153 310.35L23 221.2a16 16 0 0 1 9-29.2h160.38l48.4-148.95a16 16 0 0 1 30.44 0l48.4 149H480a16 16 0 0 1 9.05 29.2L359 310.35l50.13 148.53A16 16 0 0 1 394 480z" fill="currentColor"></path></svg>`,
-    starEmpty: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M480 208H308L256 48l-52 160H32l140 96l-54 160l138-100l138 100l-54-160z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="32"></path></svg>`,
+    starEmpty: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M480 208H308L256 48l-52 160H32l140 96l-54 160l138-100l138 100l-54-160z" fill="none" stroke="currentColor" stroke-linejoin="round" style="stroke-width: 32px;"></path></svg>`,
     phone: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M391 480c-19.52 0-46.94-7.06-88-30c-49.93-28-88.55-53.85-138.21-103.38C116.91 298.77 93.61 267.79 61 208.45c-36.84-67-30.56-102.12-23.54-117.13C45.82 73.38 58.16 62.65 74.11 52a176.3 176.3 0 0 1 28.64-15.2c1-.43 1.93-.84 2.76-1.21c4.95-2.23 12.45-5.6 21.95-2c6.34 2.38 12 7.25 20.86 16c18.17 17.92 43 57.83 52.16 77.43c6.15 13.21 10.22 21.93 10.23 31.71c0 11.45-5.76 20.28-12.75 29.81c-1.31 1.79-2.61 3.5-3.87 5.16c-7.61 10-9.28 12.89-8.18 18.05c2.23 10.37 18.86 41.24 46.19 68.51s57.31 42.85 67.72 45.07c5.38 1.15 8.33-.59 18.65-8.47c1.48-1.13 3-2.3 4.59-3.47c10.66-7.93 19.08-13.54 30.26-13.54h.06c9.73 0 18.06 4.22 31.86 11.18c18 9.08 59.11 33.59 77.14 51.78c8.77 8.84 13.66 14.48 16.05 20.81c3.6 9.53.21 17-2 22c-.37.83-.78 1.74-1.21 2.75a176.49 176.49 0 0 1-15.29 28.58c-10.63 15.9-21.4 28.21-39.38 36.58A67.42 67.42 0 0 1 391 480z" fill="currentColor"></path></svg>`,
     location: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><circle cx="256" cy="192" r="32" fill="currentColor"></circle><path d="M256 32c-88.22 0-160 68.65-160 153c0 40.17 18.31 93.59 54.42 158.78c29 52.34 62.55 99.67 80 123.22a31.75 31.75 0 0 0 51.22 0c17.42-23.55 51-70.88 80-123.22C397.69 278.61 416 225.19 416 185c0-84.35-71.78-153-160-153zm0 224a64 64 0 1 1 64-64a64.07 64.07 0 0 1-64 64z" fill="currentColor"></path></svg>`
   };
@@ -31,7 +41,7 @@ export const useTranspiler = () => {
     
     return `
       <div class="business-directory">
-        <div class="business-grid" style="--grid-columns: ${layoutSettings.value.gridColumns};">
+        <div class="business-grid" data-grid-columns="${layoutSettings.value.gridColumns}">
           ${businessesToShow
             .map((business) => {
               
@@ -49,8 +59,8 @@ export const useTranspiler = () => {
                       <img src="${business.image}" 
                            alt="${business.name}" 
                            class="business-image"
-                           onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-                      <div class="image-placeholder" style="display: none;">${icons.business}</div>
+                           onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden'); this.nextElementSibling.classList.add('show');" />
+                      <div class="image-placeholder hidden">${icons.business}</div>
                     ` : `
                       <div class="image-placeholder">${icons.business}</div>
                     `}
@@ -112,7 +122,7 @@ export const useTranspiler = () => {
                           ${agencySettings.value.agencyLogo ? `
                             <img src="${agencySettings.value.agencyLogo}" alt="Agency Logo" />
                           ` : `
-                            <span style="font-size: 12px; color: rgb(107, 114, 128);">🏢</span>
+                            <span class="agency-logo-placeholder">🏢</span>
                           `}
                         </span>
                         <span class="agency-name">${agencySettings.value.agencyName}</span>
@@ -128,12 +138,12 @@ export const useTranspiler = () => {
     `;
   });
 
-  const css = computed(() => `
-    <style>
+  const css = computed(() => {
+    const baseCSS = `
       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
       
-      /* Reset and base styles */
-      * { box-sizing: border-box; }
+      /* Environment-specific normalization */
+      ${generateNormalizedCSS(environment)}
       
       /* Container styles */
       .business-directory { 
@@ -147,8 +157,14 @@ export const useTranspiler = () => {
         display: grid; 
         gap: 1.5rem; 
         width: 100%;
-        grid-template-columns: repeat(var(--grid-columns, 3), 1fr);
+        grid-template-columns: repeat(3, 1fr); /* Default 3 columns */
       }
+      
+      .business-grid[data-grid-columns="1"] { grid-template-columns: 1fr; }
+      .business-grid[data-grid-columns="2"] { grid-template-columns: repeat(2, 1fr); }
+      .business-grid[data-grid-columns="3"] { grid-template-columns: repeat(3, 1fr); }
+      .business-grid[data-grid-columns="4"] { grid-template-columns: repeat(4, 1fr); }
+      .business-grid[data-grid-columns="5"] { grid-template-columns: repeat(5, 1fr); }
       
       /* Business card base styles */
       .business-card { 
@@ -228,6 +244,12 @@ export const useTranspiler = () => {
         align-items: center; 
         justify-content: center; 
         color: white; 
+      }
+      
+      .image-placeholder svg {
+        width: 48px !important;
+        height: 48px !important;
+        display: block !important;
       }
       
       /* Overlay container - Fixed positioning for stars */
@@ -348,6 +370,12 @@ export const useTranspiler = () => {
         flex-shrink: 0; 
       }
       
+      .contact-icon svg {
+        width: 100% !important;
+        height: 100% !important;
+        display: block !important;
+      }
+      
       /* Agency attribution */
       .agency-attribution { 
         margin-top: auto; 
@@ -389,6 +417,20 @@ export const useTranspiler = () => {
         color: rgb(107, 114, 128); 
       }
       
+      .agency-logo-placeholder {
+        font-size: 12px; 
+        color: rgb(107, 114, 128);
+      }
+      
+      /* Utility classes */
+      .hidden { 
+        display: none !important; 
+      }
+      
+      .show { 
+        display: flex !important; 
+      }
+      
       /* Icon base styles */
       .n-icon { 
         display: inline-flex !important; 
@@ -408,9 +450,11 @@ export const useTranspiler = () => {
       }
       
       @media (min-width: 769px) { 
-        .business-grid { 
-          grid-template-columns: repeat(var(--grid-columns, 3), 1fr) !important; 
-        } 
+        .business-grid[data-grid-columns="1"] { grid-template-columns: 1fr !important; }
+        .business-grid[data-grid-columns="2"] { grid-template-columns: repeat(2, 1fr) !important; }
+        .business-grid[data-grid-columns="3"] { grid-template-columns: repeat(3, 1fr) !important; }
+        .business-grid[data-grid-columns="4"] { grid-template-columns: repeat(4, 1fr) !important; }
+        .business-grid[data-grid-columns="5"] { grid-template-columns: repeat(5, 1fr) !important; }
       }
       
       /* Force layout for GHL canvas */
@@ -422,8 +466,10 @@ export const useTranspiler = () => {
           max-width: none;
         }
       }
-    </style>
-  `);
+    `;
+    
+    return `<style>${baseCSS}</style>`;
+  });
 
   const htmlPreview = computed(() => {
     return `
@@ -433,23 +479,38 @@ export const useTranspiler = () => {
   });
 
   const js = computed(() => {
-    return `
-      function handleBusinessClick(url) {
-        if (url && url !== '#') {
-          const destination = '${agencySettings.value.titleLinkDestination}';
-          if (destination === 'website') {
-            window.open(url, '_blank', 'noopener,noreferrer');
-          } else {
-            window.open(url, '_self');
-          }
-        }
-      }
-      
-      document.querySelectorAll('.business-card').forEach(card => {
-        card.style.cursor = 'pointer';
-      });
-    `;
+    const baseJS = generateNormalizedJS(environment);
+    return baseJS;
   });
 
-  return { htmlPreview, js };
+  // Optimized output for different environments
+  const optimizedOutput = computed(() => {
+    const optimized = optimizeForEnvironment(
+      html.value,
+      css.value,
+      js.value,
+      environment
+    );
+    
+    // Validate consistency in development
+    if (import.meta.env.DEV) {
+      const issues = validateConsistency(optimized.html, optimized.js);
+      if (issues.length > 0) {
+        console.warn('🔄 Environment Sync Issues:', issues);
+      }
+    }
+    
+    return optimized;
+  });
+
+  return { 
+    htmlPreview, 
+    js,
+    // New exports for enhanced consistency
+    optimizedHTML: computed(() => optimizedOutput.value.html),
+    optimizedCSS: computed(() => optimizedOutput.value.css),
+    optimizedJS: computed(() => optimizedOutput.value.js),
+    environment,
+    validationIssues: computed(() => validateConsistency(html.value, js.value))
+  };
 };

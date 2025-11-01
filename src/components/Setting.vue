@@ -18,6 +18,7 @@ import { defineAsyncComponent } from "vue";
 const BusinessView = defineAsyncComponent(() => import("./BusinessView.vue"));
 const Preview = defineAsyncComponent(() => import("./Preview.vue"));
 const StyleView = defineAsyncComponent(() => import("./StyleView.vue"));
+const EnvironmentSync = defineAsyncComponent(() => import("./EnvironmentSync.vue"));
 
 const { businesses } = useStore();
 const selectedMenu = ref("businesses");
@@ -55,6 +56,10 @@ const menuOptions = [
     label: "Preview",
     key: "preview",
   },
+  {
+    label: "Environment Sync",
+    key: "environment-sync",
+  },
 ];
 
 const renderIcon = (option: any) => {
@@ -75,6 +80,8 @@ const renderIcon = (option: any) => {
       return h(NIcon, null, { default: () => h(SettingsOutline) });
     case "preview":
       return h(NIcon, null, { default: () => h(BrowsersOutline) });
+    case "environment-sync":
+      return h(NIcon, null, { default: () => h(OptionsOutline) });
     default:
       return h(NIcon, null, { default: () => h(ColorPaletteOutline) });
   }
@@ -125,6 +132,10 @@ const renderIcon = (option: any) => {
         <div v-else-if="selectedMenu === 'preview'" class="p-8">
           <div class="text-2xl font-bold">Preview</div>
           <Preview />
+        </div>
+        <div v-else-if="selectedMenu === 'environment-sync'" class="p-8">
+          <div class="text-2xl font-bold">Environment Sync</div>
+          <EnvironmentSync />
         </div>
       </n-layout>
     </n-layout>
