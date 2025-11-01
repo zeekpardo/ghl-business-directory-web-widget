@@ -19,8 +19,7 @@ import { CSS_CLASSES } from '../utils/const';
 const { 
   agencySettings, 
   updateAgencySettings, 
-  generateBusinessDirectoryUrl, 
-  generateSlugFromName 
+  generateBusinessDirectoryUrl
 } = useSettingsStore();
 
 // Form reference

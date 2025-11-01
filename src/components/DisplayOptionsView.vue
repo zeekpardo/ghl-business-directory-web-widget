@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { NCard, NDivider, NSwitch, NSpace, NText, NAlert } from "naive-ui";
+import useStore from "../store";
 import { useSettingsStore } from "../store/settings";
 
-const { displayOptions, updateDisplayOptions } = useSettingsStore();
+const store = useStore();
+const { updateDisplayOptions } = useSettingsStore();
 
-const handleToggle = (key: keyof typeof displayOptions.value, value: boolean) => {
+const handleToggle = (key: keyof typeof store.displayOptions.value, value: boolean) => {
   updateDisplayOptions({ [key]: value });
 };
 </script>
@@ -35,7 +37,7 @@ const handleToggle = (key: keyof typeof displayOptions.value, value: boolean) =>
                 <div class="text-sm text-gray-500">Show business images on cards</div>
               </div>
               <NSwitch 
-                :value="displayOptions.showImage" 
+                :value="store.displayOptions.value.showImage" 
                 @update:value="(value) => handleToggle('showImage', value)"
               />
             </div>
@@ -46,7 +48,7 @@ const handleToggle = (key: keyof typeof displayOptions.value, value: boolean) =>
                 <div class="text-sm text-gray-500">Show business taglines below the name</div>
               </div>
               <NSwitch 
-                :value="displayOptions.showTagline" 
+                :value="store.displayOptions.value.showTagline" 
                 @update:value="(value) => handleToggle('showTagline', value)"
               />
             </div>
@@ -57,7 +59,7 @@ const handleToggle = (key: keyof typeof displayOptions.value, value: boolean) =>
                 <div class="text-sm text-gray-500">Show full business descriptions</div>
               </div>
               <NSwitch 
-                :value="displayOptions.showDescription" 
+                :value="store.displayOptions.value.showDescription" 
                 @update:value="(value) => handleToggle('showDescription', value)"
               />
             </div>
@@ -68,7 +70,7 @@ const handleToggle = (key: keyof typeof displayOptions.value, value: boolean) =>
                 <div class="text-sm text-gray-500">Show category tags for each business</div>
               </div>
               <NSwitch 
-                :value="displayOptions.showCategories" 
+                :value="store.displayOptions.value.showCategories" 
                 @update:value="(value) => handleToggle('showCategories', value)"
               />
             </div>
@@ -79,7 +81,7 @@ const handleToggle = (key: keyof typeof displayOptions.value, value: boolean) =>
                 <div class="text-sm text-gray-500">Show location badges for each business</div>
               </div>
               <NSwitch 
-                :value="displayOptions.showLocation" 
+                :value="store.displayOptions.value.showLocation" 
                 @update:value="(value) => handleToggle('showLocation', value)"
               />
             </div>
@@ -90,7 +92,7 @@ const handleToggle = (key: keyof typeof displayOptions.value, value: boolean) =>
                 <div class="text-sm text-gray-500">Show star ratings for businesses</div>
               </div>
               <NSwitch 
-                :value="displayOptions.showRating" 
+                :value="store.displayOptions.value.showRating" 
                 @update:value="(value) => handleToggle('showRating', value)"
               />
             </div>
@@ -101,7 +103,7 @@ const handleToggle = (key: keyof typeof displayOptions.value, value: boolean) =>
                 <div class="text-sm text-gray-500">Show price range indicators ($, $$, $$$, $$$$)</div>
               </div>
               <NSwitch 
-                :value="displayOptions.showPriceRange" 
+                :value="store.displayOptions.value.showPriceRange" 
                 @update:value="(value) => handleToggle('showPriceRange', value)"
               />
             </div>
@@ -112,7 +114,7 @@ const handleToggle = (key: keyof typeof displayOptions.value, value: boolean) =>
                 <div class="text-sm text-gray-500">Show Featured/Popular badges</div>
               </div>
               <NSwitch 
-                :value="displayOptions.showBadges" 
+                :value="store.displayOptions.value.showBadges" 
                 @update:value="(value) => handleToggle('showBadges', value)"
               />
             </div>
@@ -130,7 +132,7 @@ const handleToggle = (key: keyof typeof displayOptions.value, value: boolean) =>
                 <div class="text-sm text-gray-500">Show business phone numbers</div>
               </div>
               <NSwitch 
-                :value="displayOptions.showPhone" 
+                :value="store.displayOptions.value.showPhone" 
                 @update:value="(value) => handleToggle('showPhone', value)"
               />
             </div>
@@ -141,7 +143,7 @@ const handleToggle = (key: keyof typeof displayOptions.value, value: boolean) =>
                 <div class="text-sm text-gray-500">Show business email addresses</div>
               </div>
               <NSwitch 
-                :value="displayOptions.showEmail" 
+                :value="store.displayOptions.value.showEmail" 
                 @update:value="(value) => handleToggle('showEmail', value)"
               />
             </div>
@@ -152,7 +154,7 @@ const handleToggle = (key: keyof typeof displayOptions.value, value: boolean) =>
                 <div class="text-sm text-gray-500">Show business website links</div>
               </div>
               <NSwitch 
-                :value="displayOptions.showWebsite" 
+                :value="store.displayOptions.value.showWebsite" 
                 @update:value="(value) => handleToggle('showWebsite', value)"
               />
             </div>
@@ -163,7 +165,7 @@ const handleToggle = (key: keyof typeof displayOptions.value, value: boolean) =>
                 <div class="text-sm text-gray-500">Show business addresses</div>
               </div>
               <NSwitch 
-                :value="displayOptions.showAddress" 
+                :value="store.displayOptions.value.showAddress" 
                 @update:value="(value) => handleToggle('showAddress', value)"
               />
             </div>
@@ -181,7 +183,7 @@ const handleToggle = (key: keyof typeof displayOptions.value, value: boolean) =>
                 <div class="text-sm text-gray-500">Show agency name and link at bottom of cards</div>
               </div>
               <NSwitch 
-                :value="displayOptions.showAgencyAttribution" 
+                :value="store.displayOptions.value.showAgencyAttribution" 
                 @update:value="(value) => handleToggle('showAgencyAttribution', value)"
               />
             </div>
