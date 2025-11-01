@@ -18,6 +18,7 @@ import { defineAsyncComponent } from "vue";
 const BusinessView = defineAsyncComponent(() => import("./BusinessView.vue"));
 const CategoryManager = defineAsyncComponent(() => import("./CategoryManagerNew.vue"));
 const LocationManager = defineAsyncComponent(() => import("./LocationManagerSimplified.vue"));
+const AgencySettingsView = defineAsyncComponent(() => import("./AgencySettingsView.vue"));
 const Preview = defineAsyncComponent(() => import("./Preview.vue"));
 const StyleView = defineAsyncComponent(() => import("./StyleView.vue"));
 const EnvironmentSync = defineAsyncComponent(() => import("./EnvironmentSync.vue"));
@@ -121,10 +122,7 @@ const renderIcon = (option: any) => {
           <p class="text-gray-500">Display options coming soon...</p>
         </div>
         <StyleView v-else-if="selectedMenu === 'card-styling'" />
-        <div v-else-if="selectedMenu === 'agency-settings'" class="p-8">
-          <div class="text-2xl font-bold">Agency Settings</div>
-          <p class="text-gray-500">Agency settings coming soon...</p>
-        </div>
+        <AgencySettingsView v-else-if="selectedMenu === 'agency-settings'" />
         <div v-else-if="selectedMenu === 'preview'" class="p-8">
           <div class="text-2xl font-bold">Preview</div>
           <Preview />

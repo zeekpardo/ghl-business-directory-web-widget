@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import { DisplayOptionsInterface, LayoutSettingsInterface } from "../types";
+import { DisplayOptionsInterface, LayoutSettingsInterface, AgencySettingsInterface } from "../types";
 
 // Display Options
 export const displayOptions = ref<DisplayOptionsInterface>({
@@ -66,12 +66,12 @@ export const cardStyles = ref({
 });
 
 // Agency Settings
-export const agencySettings = ref({
-  agencyName: "",
-  agencyWebsite: "",
-  agencyRootDomain: "",
-  agencyLogo: "",
-  titleLinkDestination: 'directory' as 'directory' | 'website'
+export const agencySettings = ref<AgencySettingsInterface>({
+  agencyName: "Mira Marketing",
+  agencyWebsite: "https://miramarketing.com",
+  agencyRootDomain: "https://directory.miramarketing.com",
+  agencyLogo: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=200&h=200&fit=crop&crop=center",
+  titleLinkDestination: 'directory'
 });
 
 // Settings-specific operations
@@ -88,8 +88,39 @@ export const useSettingsStore = () => {
     cardStyles.value = { ...cardStyles.value, ...styles };
   };
 
-  const updateAgencySettings = (settings: Partial<typeof agencySettings.value>) => {
+  const updateAgencySettings = (settings: Partial<AgencySettingsInterface>) => {
     agencySettings.value = { ...agencySettings.value, ...settings };
+  };
+
+  // Agency-specific helper functions
+  const generateBusinessDirectoryUrl = (businessSlug: string): string => {
+    if (!agencySettings.value.agencyRootDomain || !businessSlug) {
+      return '';
+    }
+    const domain = agencySettings.value.agencyRootDomain.replace(/\/$/, '');
+    const slug = businessSlug.replace(/^\//, '');
+    return `${domain}/${slug}`;
+  };
+
+  const generateSlugFromName = (businessName: string): string => {
+    return businessName
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+      .replace(/\s+/g, '-') // Replace spaces with hyphens
+      .replace(/-+/g, '-') // Replace multiple hyphens with single
+      .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
+  };
+
+  const getTitleLinkUrl = (business: any): string => {
+    if (agencySettings.value.titleLinkDestination === 'website' && business.contact?.website) {
+      return business.contact.website;
+    }
+    return business.buttonAction || '#';
+  };
+
+  const shouldOpenInNewTab = (): boolean => {
+    return agencySettings.value.titleLinkDestination === 'website';
   };
 
   const resetToDefaults = () => {
@@ -142,6 +173,14 @@ export const useSettingsStore = () => {
       cardBorderRadius: "0.5rem",
       cardShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
     };
+
+    agencySettings.value = {
+      agencyName: "Mira Marketing",
+      agencyWebsite: "https://miramarketing.com",
+      agencyRootDomain: "https://directory.miramarketing.com",
+      agencyLogo: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=200&h=200&fit=crop&crop=center",
+      titleLinkDestination: 'directory'
+    };
   };
 
   return {
@@ -153,6 +192,10 @@ export const useSettingsStore = () => {
     updateLayoutSettings,
     updateCardStyles,
     updateAgencySettings,
+    generateBusinessDirectoryUrl,
+    generateSlugFromName,
+    getTitleLinkUrl,
+    shouldOpenInNewTab,
     resetToDefaults,
   };
 };

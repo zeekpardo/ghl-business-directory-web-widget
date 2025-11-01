@@ -82,6 +82,33 @@ export const commonRules = {
       message: 'Please enter a valid URL starting with http:// or https://',
       trigger: 'blur'
     }
+  ],
+  agencyWebsite: [
+    { required: false, trigger: 'blur' },
+    {
+      type: 'string' as const,
+      pattern: /^https?:\/\/.+/,
+      message: 'Please enter a valid URL starting with http:// or https://',
+      trigger: 'blur'
+    }
+  ],
+  agencyRootDomain: [
+    { required: false, trigger: 'blur' },
+    {
+      type: 'string' as const,
+      pattern: /^https?:\/\/.+/,
+      message: 'Please enter a valid URL starting with http:// or https://',
+      trigger: 'blur'
+    }
+  ],
+  agencyLogo: [
+    { required: false, trigger: 'blur' },
+    {
+      type: 'string' as const,
+      pattern: /^https?:\/\/.+\.(png|jpg|jpeg|gif|svg|webp)(\?.*)?$/i,
+      message: 'Please enter a valid image URL (PNG, JPG, JPEG, GIF, SVG, or WebP)',
+      trigger: 'blur'
+    }
   ]
 };
 
@@ -115,4 +142,10 @@ export const validateUrl = (url: string): boolean => {
 export const validatePhoneNumber = (phone: string): boolean => {
   const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
   return phoneRegex.test(phone.replace(/\D/g, ''));
+};
+
+export const validateImageUrl = (url: string): boolean => {
+  if (!url) return true; // Allow empty URLs
+  const imageUrlRegex = /^https?:\/\/.+\.(png|jpg|jpeg|gif|svg|webp)(\?.*)?$/i;
+  return imageUrlRegex.test(url);
 };

@@ -84,3 +84,12 @@ export interface LayoutSettingsInterface {
   listItemSpacing?: string; // e.g., '1.5rem', '20px'
   listContentGap?: string; // e.g., '1.5rem', '20px'
 }
+
+// Agency Settings Interface
+export interface AgencySettingsInterface {
+  agencyName?: string;
+  agencyWebsite?: string;
+  agencyRootDomain?: string;
+  agencyLogo?: string;
+  titleLinkDestination?: 'directory' | 'website';
+}
