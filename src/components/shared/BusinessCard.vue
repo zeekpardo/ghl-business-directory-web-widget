@@ -14,7 +14,7 @@ const props = withDefaults(defineProps<Props>(), {
   showActions: false,
 });
 
-const { categories, locations } = useStore();
+const { categories, locations, displayOptions } = useStore();
 
 const businessCategories = computed(() => {
   return props.business.categoryIds
@@ -45,7 +45,7 @@ const handleDelete = () => {
   <div class="business-card-preview bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
     <!-- Header with image and badges -->
     <div class="relative mb-3">
-      <div v-if="business.image" class="w-full aspect-video bg-gray-200 rounded-lg overflow-hidden mb-2">
+      <div v-if="business.image && displayOptions.showImage" class="w-full aspect-video bg-gray-200 rounded-lg overflow-hidden mb-2">
         <img
           :src="business.image"
           :alt="business.name"
@@ -55,7 +55,7 @@ const handleDelete = () => {
       </div>
       
       <!-- Badges -->
-      <div v-if="business.featured || business.popular" class="flex gap-2 mb-2">
+      <div v-if="displayOptions.showBadges && (business.featured || business.popular)" class="flex gap-2 mb-2">
         <span
           v-if="business.featured"
           class="px-2 py-1 text-xs font-semibold bg-orange-100 text-orange-800 rounded"
@@ -102,13 +102,18 @@ const handleDelete = () => {
       </div>
 
       <!-- Tagline -->
-      <p v-if="business.tagline" class="text-sm text-gray-600 line-clamp-2">
+      <p v-if="business.tagline && displayOptions.showTagline" class="text-sm text-gray-600 line-clamp-2">
         {{ business.tagline }}
       </p>
 
+      <!-- Description -->
+      <p v-if="business.description && displayOptions.showDescription" class="text-sm text-gray-600 line-clamp-3">
+        {{ business.description }}
+      </p>
+
       <!-- Rating and Price -->
-      <div class="flex items-center justify-between">
-        <div v-if="business.rating" class="flex items-center gap-1">
+      <div v-if="(business.rating && displayOptions.showRating) || (business.priceRange && displayOptions.showPriceRange)" class="flex items-center justify-between">
+        <div v-if="business.rating && displayOptions.showRating" class="flex items-center gap-1">
           <span class="text-sm font-medium">{{ business.rating }}</span>
           <div class="flex">
             <span
@@ -122,13 +127,13 @@ const handleDelete = () => {
           </div>
         </div>
         
-        <span v-if="business.priceRange" class="text-sm font-medium text-gray-600">
+        <span v-if="business.priceRange && displayOptions.showPriceRange" class="text-sm font-medium text-gray-600">
           {{ business.priceRange }}
         </span>
       </div>
 
       <!-- Categories -->
-      <div v-if="businessCategories.length" class="flex flex-wrap gap-1">
+      <div v-if="businessCategories.length && displayOptions.showCategories" class="flex flex-wrap gap-1">
         <span
           v-for="category in businessCategories"
           :key="category?.id"
@@ -139,7 +144,7 @@ const handleDelete = () => {
       </div>
 
       <!-- Locations -->
-      <div v-if="businessLocations.length" class="flex flex-wrap gap-1">
+      <div v-if="businessLocations.length && displayOptions.showLocation" class="flex flex-wrap gap-1">
         <span
           v-for="location in businessLocations"
           :key="location?.id"
@@ -151,22 +156,48 @@ const handleDelete = () => {
 
       <!-- Contact Info -->
       <div v-if="business.contact" class="space-y-1 text-xs text-gray-500">
-        <div v-if="business.contact.phone" class="flex items-center gap-1">
+        <div v-if="business.contact.phone && displayOptions.showPhone" class="flex items-center gap-1">
           <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
             <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
           </svg>
-          {{ business.contact.phone }}
+          <a :href="`tel:${business.contact.phone}`" class="hover:text-blue-600">
+            {{ business.contact.phone }}
+          </a>
+        </div>
+
+        <div v-if="business.contact.email && displayOptions.showEmail" class="flex items-center gap-1">
+          <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+          </svg>
+          <a :href="`mailto:${business.contact.email}`" class="hover:text-blue-600 truncate">
+            {{ business.contact.email }}
+          </a>
+        </div>
+
+        <div v-if="business.contact.website && displayOptions.showWebsite" class="flex items-center gap-1">
+          <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z" clip-rule="evenodd"/>
+          </svg>
+          <a :href="business.contact.website" target="_blank" rel="noopener noreferrer" class="hover:text-blue-600 truncate">
+            {{ business.contact.website.replace(/^https?:\/\//, '') }}
+          </a>
         </div>
         
-        <div v-if="business.contact.address" class="flex items-start gap-1">
+        <div v-if="business.contact.address && displayOptions.showAddress" class="flex items-start gap-1">
           <svg class="w-3 h-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
           </svg>
-          <span class="flex-1">
+          <a 
+            :href="`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(business.contact.address + (business.contact.city ? ', ' + business.contact.city : '') + (business.contact.state ? ', ' + business.contact.state : ''))}`"
+            target="_blank" 
+            rel="noopener noreferrer"
+            class="flex-1 hover:text-blue-600"
+          >
             {{ business.contact.address }}
             <span v-if="business.contact.city">, {{ business.contact.city }}</span>
             <span v-if="business.contact.state">, {{ business.contact.state }}</span>
-          </span>
+          </a>
         </div>
       </div>
     </div>
@@ -184,6 +215,13 @@ const handleDelete = () => {
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }

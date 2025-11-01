@@ -10,7 +10,7 @@
 ```bash
 # Clone the repository
 git clone <repository-url>
-cd marketing-price-banner-main
+cd ghl-business-directory-main
 
 # Install dependencies
 npm install
