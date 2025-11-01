@@ -5,79 +5,57 @@ export const locations = ref<LocationInterface[]>([
   {
     id: "manhattan",
     name: "Manhattan",
-    address: "New York, NY",
-    color: "#8b5cf6",
-    textColor: "#ffffff"
+    address: "New York, NY"
   },
   {
     id: "brooklyn",
     name: "Brooklyn",
-    address: "Brooklyn, NY",
-    color: "#ec4899",
-    textColor: "#ffffff"
+    address: "Brooklyn, NY"
   },
   {
     id: "sf-downtown",
     name: "San Francisco Downtown",
-    address: "San Francisco, CA",
-    color: "#14b8a6",
-    textColor: "#ffffff"
+    address: "San Francisco, CA"
   },
   {
     id: "portland",
     name: "Portland",
-    address: "Portland, OR",
-    color: "#10b981",
-    textColor: "#ffffff"
+    address: "Portland, OR"
   },
   {
     id: "austin",
     name: "Austin",
-    address: "Austin, TX",
-    color: "#f59e0b",
-    textColor: "#ffffff"
+    address: "Austin, TX"
   },
   {
     id: "chicago",
     name: "Chicago",
-    address: "Chicago, IL",
-    color: "#3b82f6",
-    textColor: "#ffffff"
+    address: "Chicago, IL"
   },
   {
     id: "miami",
     name: "Miami",
-    address: "Miami, FL",
-    color: "#ef4444",
-    textColor: "#ffffff"
+    address: "Miami, FL"
   },
   {
     id: "seattle",
     name: "Seattle",
-    address: "Seattle, WA",
-    color: "#06b6d4",
-    textColor: "#ffffff"
+    address: "Seattle, WA"
   },
   {
     id: "phoenix",
     name: "Phoenix",
-    address: "Phoenix, AZ",
-    color: "#dc2626",
-    textColor: "#ffffff"
+    address: "Phoenix, AZ"
   },
   {
     id: "denver",
     name: "Denver",
-    address: "Denver, CO",
-    color: "#7c3aed",
-    textColor: "#ffffff"
+    address: "Denver, CO"
   },
   {
     id: "boulder",
     name: "Boulder",
-    address: "Boulder, CO",
-    color: "#059669",
-    textColor: "#ffffff"
+    address: "Boulder, CO"
   }
 ]);
 

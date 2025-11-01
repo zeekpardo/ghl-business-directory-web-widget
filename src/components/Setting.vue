@@ -16,6 +16,8 @@ import { defineAsyncComponent } from "vue";
 
 // Lazy load heavy components for better performance
 const BusinessView = defineAsyncComponent(() => import("./BusinessView.vue"));
+const CategoryManager = defineAsyncComponent(() => import("./CategoryManagerNew.vue"));
+const LocationManager = defineAsyncComponent(() => import("./LocationManagerSimplified.vue"));
 const Preview = defineAsyncComponent(() => import("./Preview.vue"));
 const StyleView = defineAsyncComponent(() => import("./StyleView.vue"));
 const EnvironmentSync = defineAsyncComponent(() => import("./EnvironmentSync.vue"));
@@ -108,14 +110,8 @@ const renderIcon = (option: any) => {
       </n-layout-sider>
       <n-layout class="overflow-hidden bg-gray-100">
         <BusinessView v-if="selectedMenu === 'businesses'" v-model:businesses="businesses" />
-        <div v-else-if="selectedMenu === 'categories'" class="p-8">
-          <div class="text-2xl font-bold">Categories</div>
-          <p class="text-gray-500">Categories functionality coming soon...</p>
-        </div>
-        <div v-else-if="selectedMenu === 'locations'" class="p-8">
-          <div class="text-2xl font-bold">Locations</div>
-          <p class="text-gray-500">Locations functionality coming soon...</p>
-        </div>
+        <CategoryManager v-else-if="selectedMenu === 'categories'" />
+        <LocationManager v-else-if="selectedMenu === 'locations'" />
         <div v-else-if="selectedMenu === 'layout'" class="p-8">
           <div class="text-2xl font-bold">Layout Settings</div>
           <p class="text-gray-500">Layout settings coming soon...</p>

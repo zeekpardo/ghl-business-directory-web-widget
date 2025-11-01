@@ -9,7 +9,7 @@ import {
 } from "../utils/environmentSync";
 
 export const useTranspiler = () => {
-  const { businesses, displayOptions, layoutSettings, agencySettings } = useStore();
+  const { businesses, categories, locations, displayOptions, layoutSettings, agencySettings } = useStore();
   
   // Detect current environment for consistent rendering
   const environment = detectEnvironment();
@@ -33,6 +33,20 @@ export const useTranspiler = () => {
       }
     }
     return stars.join('');
+  };
+
+  const getBusinessCategories = (categoryIds: string[]) => {
+    return categoryIds
+      .map(id => categories.value.find(cat => cat.id === id))
+      .filter(Boolean)
+      .map(category => category!);
+  };
+
+  const getBusinessLocations = (locationIds: string[]) => {
+    return locationIds
+      .map(id => locations.value.find(loc => loc.id === id))
+      .filter(Boolean)
+      .map(location => location!);
   };
 
   const html = computed(() => {
@@ -89,6 +103,23 @@ export const useTranspiler = () => {
 
                     ${business.description && displayOptions.value.showDescription ? `
                       <p class="business-description">${business.description}</p>
+                    ` : ''}
+
+                    ${(business.categoryIds.length > 0 && displayOptions.value.showCategories) || (business.locationIds.length > 0 && displayOptions.value.showLocation) ? `
+                      <div class="business-tags">
+                        ${business.categoryIds.length > 0 && displayOptions.value.showCategories ? getBusinessCategories(business.categoryIds)
+                          .map(category => `
+                            <span class="category-tag">
+                              ${category.name}
+                            </span>
+                          `).join('') : ''}
+                        ${business.locationIds.length > 0 && displayOptions.value.showLocation ? getBusinessLocations(business.locationIds)
+                          .map(location => `
+                            <span class="location-tag">
+                              ${location.name}
+                            </span>
+                          `).join('') : ''}
+                      </div>
                     ` : ''}
 
                     <div class="contact-info">
@@ -340,6 +371,54 @@ export const useTranspiler = () => {
         color: rgb(107, 114, 128); 
         line-height: 1.5; 
         margin: 0; 
+      }
+
+      /* Business categories */
+      .business-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin: 0.5rem 0;
+      }
+
+      .category-tag {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-family: Inter, sans-serif;
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 1.2;
+        text-decoration: none;
+        white-space: nowrap;
+        background-color: #f3f4f6;
+        color: #374151;
+        border: 1px solid #d1d5db;
+        transition: opacity 0.2s ease;
+      }
+
+      .category-tag:hover {
+        opacity: 0.8;
+      }
+
+
+      .location-tag {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-family: Inter, sans-serif;
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 1.2;
+        text-decoration: none;
+        white-space: nowrap;
+        background-color: #dbeafe;
+        color: #1d4ed8;
+        border: 1px solid #bfdbfe;
+      }
+
+      .location-tag:hover {
+        opacity: 0.8;
       }
       
       /* Contact info */

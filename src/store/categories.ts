@@ -5,50 +5,36 @@ export const categories = ref<CategoryInterface[]>([
   {
     id: "fitness",
     name: "Fitness & Wellness",
-    color: "#10b981",
-    textColor: "#ffffff",
     tags: ["gym", "yoga", "pilates", "personal training", "spa", "wellness"]
   },
   {
     id: "restaurant",
     name: "Restaurants & Cafes",
-    color: "#ef4444",
-    textColor: "#ffffff",
     tags: ["italian", "american", "asian", "cafe", "bar", "coffee"]
   },
   {
     id: "technology",
     name: "Technology & Services",
-    color: "#3b82f6",
-    textColor: "#ffffff",
     tags: ["IT support", "web design", "software", "consulting", "digital marketing"]
   },
   {
     id: "retail",
     name: "Retail & Shopping",
-    color: "#8b5cf6",
-    textColor: "#ffffff",
     tags: ["bookstore", "clothing", "electronics", "home goods"]
   },
   {
     id: "automotive",
     name: "Automotive Services",
-    color: "#f59e0b",
-    textColor: "#ffffff",
     tags: ["auto repair", "car service", "maintenance", "mechanic"]
   },
   {
     id: "beauty",
     name: "Beauty & Personal Care",
-    color: "#ec4899",
-    textColor: "#ffffff",
     tags: ["hair salon", "nail salon", "skincare", "barbershop"]
   },
   {
     id: "healthcare",
     name: "Healthcare & Medical",
-    color: "#06b6d4",
-    textColor: "#ffffff",
     tags: ["veterinary", "dental", "medical", "clinic", "wellness"]
   }
 ]);
@@ -70,6 +56,16 @@ export const useCategoryStore = () => {
     const index = categories.value.findIndex(c => c.id === categoryId);
     if (index !== -1) {
       categories.value.splice(index, 1);
+    }
+  };
+
+  const deleteTag = (categoryId: string, tagToDelete: string) => {
+    const category = categories.value.find(c => c.id === categoryId);
+    if (category && category.tags) {
+      const tagIndex = category.tags.indexOf(tagToDelete);
+      if (tagIndex > -1) {
+        category.tags.splice(tagIndex, 1);
+      }
     }
   };
 
@@ -96,6 +92,7 @@ export const useCategoryStore = () => {
     addCategory,
     updateCategory,
     deleteCategory,
+    deleteTag,
     getCategoryById,
     getCategoryNames,
     getCategoriesWithBusinessCount,

@@ -473,3 +473,261 @@ Monitor bundle sizes and load times:
 ```
 
 These practices ensure your widget remains maintainable, performant, and scalable as the codebase grows.
+
+## Categories Feature Implementation
+
+### Overview
+The categories feature provides a complete CRUD system for managing business categories with associated tags. Each category can have multiple tags for more granular business classification, and the system includes cascade deletion to maintain data integrity.
+
+### Architecture Patterns
+
+#### 1. Reusable CRUD Component
+The categories feature introduces a generic `CrudManager` component that can be reused for any entity management:
+
+```vue
+<!-- Usage Example -->
+<CrudManager
+  title="Categories"
+  description="Manage business categories with tags for better organization"
+  :items="categories"
+  :create-default="createDefaultCategory"
+  :validation="validationRules"
+  :get-business-count="getBusinessCount"
+  :on-after-delete="handleAfterDelete"
+  :show-tags="true"
+  :show-colors="true"
+>
+  <template #form="{ formData, isLoading, newTag, addTag, removeTag }">
+    <!-- Dynamic form content here -->
+  </template>
+</CrudManager>
+```
+
+**Benefits:**
+- **DRY Principle**: Single component handles all CRUD operations
+- **Type Safety**: Fully typed with TypeScript generics
+- **Flexibility**: Configurable features (tags, colors, validation)
+- **Consistency**: Uniform UX across all entity types
+
+#### 2. Data Model Integration
+Categories are fully integrated with the business directory data model:
+
+```typescript
+interface CategoryInterface {
+  id: string;
+  name: string;
+  color?: string;
+  textColor?: string;
+  tags?: string[];
+}
+
+interface BusinessInterface {
+  // ... other fields
+  categoryIds: string[]; // Multiple categories supported
+}
+```
+
+#### 3. Cascade Deletion Pattern
+When categories are deleted, all business references are automatically cleaned up:
+
+```typescript
+const handleAfterDelete = (deletedCategory: CategoryInterface) => {
+  // Remove category from businesses when deleted
+  businesses.value.forEach(business => {
+    const index = business.categoryIds.indexOf(deletedCategory.id);
+    if (index > -1) {
+      business.categoryIds.splice(index, 1);
+    }
+  });
+};
+```
+
+### Display Integration
+
+#### 1. Preview Integration
+Categories are displayed in the generated HTML with dynamic styling:
+
+```typescript
+// In useTranspiler.ts
+${business.categoryIds.length > 0 && displayOptions.value.showCategories ? `
+  <div class="business-categories">
+    ${getBusinessCategories(business.categoryIds)
+      .map(category => `
+        <span class="category-tag" style="background-color: ${category.color}; color: ${category.textColor};">
+          ${category.name}
+        </span>
+      `).join('')}
+  </div>
+` : ''}
+```
+
+#### 2. Responsive CSS
+Category tags are styled to be responsive and visually appealing:
+
+```css
+.business-categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.category-tag {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 500;
+  transition: opacity 0.2s ease;
+}
+```
+
+### Component Reusability
+
+#### 1. Generic CRUD Component
+The `CrudManager` component is designed for reuse across different entities:
+
+```typescript
+// For Categories
+<CrudManager
+  title="Categories"
+  :show-tags="true"
+  :show-colors="true"
+  // ... other props
+/>
+
+// For Locations (future implementation)
+<CrudManager
+  title="Locations"
+  :show-tags="false"
+  :show-colors="true"
+  // ... other props
+/>
+```
+
+#### 2. Shared Form Components
+Common form elements are extracted into reusable components:
+
+```vue
+<!-- FormField.vue -->
+<template>
+  <n-form-item :label="label" :path="path">
+    <n-input v-if="type === 'input'" v-model:value="modelValue" />
+    <n-color-picker v-else-if="type === 'color'" v-model:value="modelValue" />
+    <!-- ... other input types -->
+  </n-form-item>
+</template>
+```
+
+### Best Practices Demonstrated
+
+#### 1. TypeScript Integration
+- Full type safety with generic constraints
+- Interface definitions for all data structures
+- Proper type validation in forms
+
+#### 2. Reactive State Management
+- Vue 3 Composition API with reactive refs
+- Centralized store pattern with domain separation
+- Auto-save functionality with watchers
+
+#### 3. Component Architecture
+- Single responsibility principle
+- Slot-based customization
+- Event-driven communication
+
+#### 4. Error Handling
+- Form validation with user-friendly messages
+- Confirmation dialogs for destructive actions
+- Graceful error states and recovery
+
+#### 5. Performance Optimization
+- Lazy loading of heavy components
+- Computed properties for derived data
+- Efficient re-rendering with proper keys
+
+### Testing Strategy
+
+#### 1. Component Testing
+Test the CrudManager component with different configurations:
+
+```typescript
+test('CrudManager displays categories correctly', () => {
+  const wrapper = mount(CrudManager, {
+    props: {
+      title: 'Categories',
+      items: mockCategories,
+      showTags: true,
+      showColors: true
+    }
+  });
+  
+  expect(wrapper.find('.business-categories')).toBeTruthy();
+});
+```
+
+#### 2. Integration Testing
+Test the complete workflow from category creation to business assignment:
+
+```typescript
+test('category deletion removes from businesses', async () => {
+  // Create category
+  // Assign to business
+  // Delete category
+  // Verify business no longer has category
+});
+```
+
+### Migration and Compatibility
+
+#### 1. Backward Compatibility
+The categories feature maintains compatibility with existing data:
+
+```typescript
+// Handle existing businesses without categoryIds
+const categoryIds = business.categoryIds || [];
+```
+
+#### 2. Data Migration
+When updating existing installations:
+
+```typescript
+// Migrate existing category references
+businesses.value.forEach(business => {
+  if (business.category && !business.categoryIds) {
+    business.categoryIds = [business.category];
+    delete business.category;
+  }
+});
+```
+
+### Extension Points
+
+#### 1. Tag Filtering
+The tag system can be extended for advanced filtering:
+
+```typescript
+const filterBusinessesByTag = (tag: string) => {
+  return businesses.value.filter(business => 
+    business.categoryIds.some(catId => {
+      const category = getCategoryById(catId);
+      return category?.tags?.includes(tag);
+    })
+  );
+};
+```
+
+#### 2. Category Analytics
+Business count tracking provides insights:
+
+```typescript
+const getCategoryAnalytics = () => {
+  return categories.value.map(category => ({
+    ...category,
+    businessCount: getBusinessCount(category.id),
+    popularTags: getPopularTags(category.id)
+  }));
+};
+```
+
+This implementation demonstrates modern Vue 3 development practices while maintaining flexibility for future enhancements and ensuring excellent developer experience through comprehensive TypeScript support.

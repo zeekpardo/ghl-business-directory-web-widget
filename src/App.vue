@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { NConfigProvider } from "naive-ui";
+import { NConfigProvider, NDialogProvider, NMessageProvider } from "naive-ui";
 import { onMounted } from "vue";
 import Setting from "./components/Setting.vue";
 import { usePostmate } from "./composition/usePostmate";
@@ -51,7 +51,11 @@ onMounted(() => {
 
 <template>
   <NConfigProvider :theme="theme" class="h-screen">
-    <Setting />
+    <NDialogProvider>
+      <NMessageProvider>
+        <Setting />
+      </NMessageProvider>
+    </NDialogProvider>
   </NConfigProvider>
 </template>
 

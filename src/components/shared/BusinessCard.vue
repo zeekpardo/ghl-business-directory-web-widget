@@ -45,7 +45,7 @@ const handleDelete = () => {
   <div class="business-card-preview bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
     <!-- Header with image and badges -->
     <div class="relative mb-3">
-      <div v-if="business.image" class="w-full h-32 bg-gray-200 rounded-lg overflow-hidden mb-2">
+      <div v-if="business.image" class="w-full aspect-video bg-gray-200 rounded-lg overflow-hidden mb-2">
         <img
           :src="business.image"
           :alt="business.name"

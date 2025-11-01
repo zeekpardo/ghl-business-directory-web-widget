@@ -48,8 +48,6 @@ export interface PlanInterface {
 export interface CategoryInterface {
   id: string;
   name: string;
-  color?: string; // Default: #10b981
-  textColor?: string; // Default: #ffffff
   tags?: string[]; // Optional array of tag strings
 }
 
@@ -58,8 +56,6 @@ export interface LocationInterface {
   id: string;
   name: string;
   address?: string;
-  color?: string; // Default: #3b82f6
-  textColor?: string; // Default: #ffffff
 }
 
 // Display Options Interface
